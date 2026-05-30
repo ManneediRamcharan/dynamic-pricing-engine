@@ -44,10 +44,18 @@ app = FastAPI(
 
 # Middleware
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+import os
+cors_origins_env = os.getenv("CORS_ORIGINS")
+if cors_origins_env:
+    origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
+else:
+    origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://frontend:3000"],
-    allow_credentials=True,
+    allow_origins=origins,
+    allow_credentials=False if "*" in origins else True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
